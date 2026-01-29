@@ -31,7 +31,7 @@ pub fn derive_field_names_as_array(
     _ => panic!("FieldNamesAsArray can only be derived for structs"),
   };
 
-  let mut field_exprs = Vec::new();
+  let mut field_exprs = Vec::<proc_macro2::TokenStream>::new();
 
   for field in fields.iter() {
     let field_name = field.ident.as_ref().unwrap().to_string();
@@ -80,18 +80,22 @@ pub fn derive_field_names_as_array(
 
       if flatten {
         if let Some(nested_struct) = nested_struct {
+          #[cfg(debug_assertions)]
           field_exprs.push(quote! { <#nested_struct>::field_names_as_array().iter().map(|s| format!("{}.{}", #field_name, s)).collect::<Vec<_>>() });
         }
       } else {
+        #[cfg(debug_assertions)]
         field_exprs.push(quote! { vec![#field_name.to_string()] });
       }
     } else {
+      #[cfg(debug_assertions)]
       field_exprs.push(quote! { vec![#field_name.to_string()] });
     }
   }
 
   let output = quote! {
-      impl #struct_name {
+      #[cfg(debug_assertions)]
+      impl<T> #struct_name<T> {
           pub fn field_names_as_array() -> Vec<String> {
               let mut field_names = Vec::new();
               #( field_names.extend(#field_exprs); )*

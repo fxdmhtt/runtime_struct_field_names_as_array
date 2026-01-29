@@ -3,26 +3,26 @@
 use runtime_struct_field_names_as_array::FieldNamesAsArray;
 
 #[derive(FieldNamesAsArray)]
-struct Parent {
-  parent1: Option<String>,
-  parent2: String,
+struct Parent<T> {
+  parent1: Option<T>,
+  parent2: T,
 }
 
 #[test]
 fn test_with_parents() {
   #[derive(FieldNamesAsArray)]
-  struct Test {
-    test1: String,
+  struct Test<T> {
+    test1: T,
     test2: i64,
-    test3: String,
+    test3: T,
     #[field_names_as_array(flatten)]
-    test4: Parent,
+    test4: Parent<T>,
     #[field_names_as_array(flatten)]
-    test5: Option<Parent>,
+    test5: Option<Parent<T>>,
   }
 
   assert_eq!(
-    Test::field_names_as_array(),
+    Test::<String>::field_names_as_array(),
     [
       "test1",
       "test2",
@@ -38,16 +38,16 @@ fn test_with_parents() {
 #[test]
 fn test_without_parents() {
   #[derive(FieldNamesAsArray)]
-  struct Test {
-    test1: String,
+  struct Test<T> {
+    test1: T,
     test2: i64,
-    test3: String,
-    test4: Parent,
-    test5: Option<Parent>,
+    test3: T,
+    test4: Parent<T>,
+    test5: Option<Parent<T>>,
   }
 
   assert_eq!(
-    Test::field_names_as_array(),
+    Test::<String>::field_names_as_array(),
     ["test1", "test2", "test3", "test4", "test5"]
   );
 }
@@ -55,17 +55,17 @@ fn test_without_parents() {
 #[test]
 fn test_mixed() {
   #[derive(FieldNamesAsArray)]
-  struct Test {
-    test1: String,
+  struct Test<T> {
+    test1: T,
     test2: i64,
-    test3: String,
-    test4: Parent,
+    test3: T,
+    test4: Parent<T>,
     #[field_names_as_array(flatten)]
-    test5: Option<Parent>,
+    test5: Option<Parent<T>>,
   }
 
   assert_eq!(
-    Test::field_names_as_array(),
+    Test::<String>::field_names_as_array(),
     [
       "test1",
       "test2",
